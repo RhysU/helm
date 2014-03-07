@@ -1,0 +1,49 @@
+digraph g {
+
+    rankdir=LR;
+    style=invis;
+
+    subgraph cluster_0 {
+        e     [shape=point];
+        Ti    [shape=box,    label=<(T<SUB>i</SUB>&thinsp;s)<SUP>-1</SUP>>];
+        sum_e [shape=circle, label=<&#931;>];
+    }
+
+    actuator [shape=box,    label=<<SUP>u(s)</SUP>&frasl;<SUB>v(s)</SUB>>, style=filled];
+    f        [shape=point];
+    kp       [shape=box,    label=<k<SUB>p</SUB>>];
+    output   [shape=none,   style=invis];
+    process  [shape=box,    label=<<SUP>y(s)</SUP>&frasl;<SUB>u(s)</SUB>>, style=filled];
+    r        [shape=point];
+    sum_es   [shape=circle, label=<&#931;>];
+    sum_kp   [shape=circle, label=<&#931;>];
+    Td       [shape=box,    label=<T<SUB>d</SUB>&thinsp;s>];
+    Tf       [shape=box,    label=<(1 + T<SUB>f</SUB>&thinsp;s)<SUP>-1</SUP>>];
+    Tt       [shape=box,    label=<(T<SUB>t</SUB>&thinsp;s)<SUP>-1</SUP>>];
+    u        [shape=point];
+    v        [shape=point];
+    y        [shape=point];
+
+    actuator -> u        [arrowhead=none, headlabel=<u>, weight=10];
+    e        -> sum_kp   [];
+    e        -> Ti       [];
+    f        -> Tf       [dir=back, arrowtail=none, taillabel=<f>];
+    kp       -> v        [arrowhead=none, headlabel=<v>, weight=10];
+    process  -> y        [weight=10, arrowhead=none];
+    r        -> sum_e    [label=<r>];
+    sum_e    -> e        [arrowhead=none, headlabel=<e>];
+    sum_es   -> u        [dir=back, headport=n, tailport=e];
+    sum_e    -> y        [dir=back, taillabel=<<B>&#8722;&thinsp;</B>>];
+    sum_kp   -> kp       [weight=10];
+    Td       -> f        [dir=back];
+    Td       -> sum_kp   [headlabel=<<B>&#8722;&ensp;&ensp;</B>>];
+    Tf       -> y        [dir=back];
+    Ti       -> sum_kp   [];
+    Tt       -> sum_es   [dir=back, label=<e<SUB>s</SUB>>, headport=nw];
+    Tt       -> sum_kp   [];
+    u        -> process  [weight=10];
+    v        -> actuator [weight=10];
+    v        -> sum_es   [headlabel=<<B>&#8722;</B>>, tailport=n, headport=w];
+    y        -> output   [taillabel=<y>];
+
+}

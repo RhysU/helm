@@ -13,7 +13,7 @@ The controller, implemented wholly in [helm.h](helm.h), features:
  * exposure of all independent physical time scales, and
  * the ability to accommodate varying sample rate.
 
-<center><img src="helm.svg" width="95%"/></center>
+<center><img src="helm.svg?raw=true" width="95%"/></center>
 
 The design and nomenclature is based largely on Figure 10.11 of
 [Feedback Systems](http://www.worldcat.org/isbn/9781400828739) by

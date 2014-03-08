@@ -21,6 +21,15 @@ extern "C" {
 // TODO Document the continuous time and discretized equations
 // FIXME Check claims on no filtering with Tf = 1
 
+#ifndef HELM_SUPPRESS_DOXYGEN_MAINPAGE
+/** \mainpage
+ * A header-only C99 proportional-integral-derivative (PID) controller.
+ *
+ * Please see \ref helm.h for design details and http://github.com/RhysU/helm
+ * for project information.
+ */
+#endif
+
 /** \file
  * \brief A header-only C99 proportional-integral-derivative (PID) controller.
  *
@@ -35,6 +44,10 @@ extern "C" {
  *   <li>exposure of all independent physical time scales, and</li>
  *   <li>the ability to accommodate varying sample rate.</li>
  * </ul>
+ *
+ * \image html  helm.svg "Control block diagram"
+ * \image latex helm.eps "Control block diagram" width=\textwidth
+ *
  * The design and nomenclature is based largely on Figure 10.11 of <a
  * href="http://www.worldcat.org/isbn/9781400828739">Feedback Systems</a> by
  * Astrom and Murray.

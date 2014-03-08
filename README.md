@@ -3,7 +3,7 @@ helm
 
 A header-only C99 proportional-integral-derivative (PID) controller.
 
-<center><img src="figures/helm.png" width="100%"/></center>
+<center><img src="helm.png" width="100%"/></center>
 
 The controller, implemented wholly in [helm.h](helm.h), features:
  * low pass filtering of the process derivative,

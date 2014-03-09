@@ -49,6 +49,19 @@ extern "C" {
  * href="http://www.worldcat.org/isbn/9781400828739">Feedback Systems</a> by
  * Astrom and Murray.
  *
+ * In the time domain, the governing positional equation is
+ * \f{align}{
+ *  v(t) &= k_p e(t)
+ *        + k_i \int_0^t e(t) \mathrm{d}t
+ *        + k_t \int_0^t e_s(t) \mathrm{d}t
+ *        - k_d \frac{\mathrm{d}}{\mathrm{d}t} f(t)
+ * \f}
+ * where
+ * \f{align}{
+ *  T_f \frac{\mathrm{d}}{\mathrm{d}t} f &= y - f
+ * \f}
+ * provides low order filtering.
+ *
  * Sample written with nomenclature from helm_state() and helm_steady():
  * \code
  *   struct helm_state h;

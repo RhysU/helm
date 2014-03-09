@@ -23,17 +23,18 @@ extern "C" {
 
 #ifndef HELM_SUPPRESS_DOXYGEN_MAINPAGE
 /** \mainpage
- * A header-only C99 proportional-integral-derivative (PID) controller.
- *
  * Please see \ref helm.h for design details and http://github.com/RhysU/helm
  * for project information.
  */
 #endif
 
-/** \file
+/**
+ * \file
  * \brief A header-only C99 proportional-integral-derivative (PID) controller.
  *
- * This controller features
+ * \image html  helm.png "Controller block diagram"
+ * \image latex helm.eps "Controller block diagram" width=\textwidth
+ * The controller features
  * <ul>
  *   <li>low pass filtering of the process derivative,</li>
  *   <li>windup protection,</li>
@@ -44,15 +45,11 @@ extern "C" {
  *   <li>exposure of all independent physical time scales, and</li>
  *   <li>the ability to accommodate varying sample rate.</li>
  * </ul>
- *
- * \image html  helm.svg "Control block diagram"
- * \image latex helm.eps "Control block diagram" width=\textwidth
- *
- * The design and nomenclature is based largely on Figure 10.11 of <a
+ * The design and nomenclature is based largely on Figure 10.11 in <a
  * href="http://www.worldcat.org/isbn/9781400828739">Feedback Systems</a> by
  * Astrom and Murray.
  *
- * Sample written with nomenclature from \ref helm_state and \ref helm_steady:
+ * Sample written with nomenclature from helm_state() and helm_steady():
  * \code
  *   struct helm_state h;
  *
@@ -112,7 +109,7 @@ struct helm_state
     /**@}*/
 
     /**
-     * Internal state maintained between calls to \ref steady(...)
+     * Internal state maintained between calls to helm_steady().
      * @{
      */
     double y;   /**< Tracks instantaneous process observable. */
@@ -141,7 +138,7 @@ helm_reset(struct helm_state * const h)
  * \brief Forget any transient state, but \e not tuning parameters.
  *
  * Necessary to achieve bumpless manual-to-automatic transitions
- * before calling to \ref helm_steady after a period of manual control.
+ * before calling to helm_steady() after a period of manual control.
  */
 static inline
 void

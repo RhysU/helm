@@ -23,7 +23,7 @@ extern "C" {
  * A header-only PID controller based largely on <a
  * href="http://www.cds.caltech.edu/~murray/amwiki/index.php/PID_Control">
  * Chapter 10</a> of <a href="http://www.worldcat.org/isbn/0691135762">Astrom
- * and Murray</a>
+ * and Murray</a>.
  *
  * This proportional-integral-derivative (PID) controller features
  * <ul>

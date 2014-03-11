@@ -92,7 +92,7 @@ extern "C" {
  * Obtaining a discrete time evoluation equation is straightforward.  Multiply
  * the above continuous result by the time differential, substitute first
  * order backward differences, and incorporate the low-pass filter in a
- * consistent fashion.  One finds the following sequence of computations
+ * consistent fashion.  One then finds the following:
  * \f{align}{
  *     {\mathrm{d}t}_i &= t_i - t_{i-1}
  * \f}
@@ -105,6 +105,7 @@ extern "C" {
  * \f}
  * \f{align}{
  *     {\mathrm{d}f}_i &= f(t_i) - f(t_{i-1})
+ *                      = \alpha\left( y(t_i) - f(t_{i-1}) \right)
  * \f}
  * \f{align}{
  *     {\mathrm{d}y}_i &= y(t_i) - y(t_{i-1})
@@ -203,6 +204,7 @@ struct helm_state
  * action.  Enable those terms by setting their associated time scales.
  *
  * \param[in,out] h Houses tuning parameters to be reset.
+ * \return Argument \c h to permit call chaining.
  */
 static inline
 struct helm_state *
@@ -249,6 +251,7 @@ helm_approach(struct helm_state * const h)
  * \param[in]     y  Observed process output to drive to \c r.
  *
  * \return Incremental suggested change to control signal \c v.
+ * \see Overview of \ref helm.h for the discrete evolution equations.
  */
 static inline
 double
@@ -259,7 +262,7 @@ helm_steady(struct helm_state * const h,
             const double v,
             const double y)
 {
-    double dy, df, dv = 0;
+    double dv = 0;
 
     if (!isnan(y)) {                      // Avoid driving blind
 
@@ -268,8 +271,10 @@ helm_steady(struct helm_state * const h,
             h->f = y;
         }
 
-        dy  = y - h->y;                   // Backward difference for y
-        df  = (dt / h->Tf)*(y - h->f);    // Filtered difference for y
+        double a, df, dy;
+        a   = dt / (h->Tf + dt);          // Convex combination parameter alpha
+        df  = a*(y - h->f);               // Filtered difference for y
+        dy  =    y - h->y ;               // Backward difference for y
         dv += (r - y) / h->Ti;            // Action from integral control
         dv += (u - v) / h->Tt;            // Action from automatic reset
         dv *= dt;                         // Scale integral actions by time step
@@ -277,8 +282,8 @@ helm_steady(struct helm_state * const h,
         dv += /*dr=0*/ - dy;              // Action from proporational control
         dv *= h->kp;                      // Scale by unified gain parameter
 
-        h->y  = y;                        // Track observable for next call
-        h->f += df;                       // Track filter for next call
+        h->y  = y;                        // Update observable for next call
+        h->f += df;                       // Update filter for next call
     }
 
     return dv;

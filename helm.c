@@ -15,11 +15,11 @@
 #include "helm.h"
 
 extern
-void
+struct helm_state *
 helm_reset(struct helm_state * const h);
 
 extern
-void
+struct helm_state *
 helm_approach(struct helm_state * const h);
 
 extern

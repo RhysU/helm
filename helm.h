@@ -18,8 +18,6 @@
 extern "C" {
 #endif
 
-// FIXME Check claims on no filtering with Tf = 1
-
 /**
  * \file
  * A header-only PID controller based largely on <a
@@ -44,7 +42,7 @@ extern "C" {
  * Let \f$f\f$ be a first-order, low-pass filtered version of controlled process
  * output \f$y\f$ governed by
  * \f{align}{
- *  T_f \frac{\mathrm{d}}{\mathrm{d}t} f &= y - f
+ *     \frac{\mathrm{d}}{\mathrm{d}t} f &= \frac{y - f}{T_f}
  * \f}
  * where \f$T_f\f$ is a filter time scale.  Then, in the time domain and
  * expressed in positional form, the control signal \f$v\f$ evolves according to
@@ -124,8 +122,8 @@ extern "C" {
  *             \right]
  * \f}
  * where notice \f$f(t)\f$ is nothing but an exponential weighted moving average
- * of \f$y(t)\f$ that permits varying sampling rate.  An implementation needs
- * only to track two pieces of state, namely \f$f(t_{i-1})\f$ and
+ * of \f$y(t)\f$ that permits varying the sampling rate.  An implementation
+ * needs only to track two pieces of state, namely \f$f(t_{i-1})\f$ and
  * \f$y(t_{i-1})\f$, across time steps.
  *
  * Sample written with nomenclature from helm_state() and helm_steady():
@@ -176,15 +174,17 @@ struct helm_state
      * Tt has units of time multiplied by <code>u0 / y0</code>.
      * All other time scales possess units of time.
      *
-     * Setting a time scale to \c INFINITY disables the associated term.
-     *
      * @{
      */
-    double kp;  /**< Proportional gain modifying P, I, and D terms.  */
-    double Td;  /**< Time scale governing derivative action.         */
-    double Tf;  /**< Time scale filtering process observable for D.  */
-    double Ti;  /**< Time scale governing integral action.           */
-    double Tt;  /**< Time scale governing automatic reset.           */
+    double kp;  /**< Proportional gain modifying P, I, and D terms.   */
+    double Td;  /**< Time scale governing derivative action.
+                     Set to zero to disable derivative control.       */
+    double Tf;  /**< Time scale filtering process observable for D.
+                     Set to infinity to disable observable filtering. */
+    double Ti;  /**< Time scale governing integral action.
+                     Set to infinity to disable integral control.     */
+    double Tt;  /**< Time scale governing automatic reset.
+                     Set to infinity to disable automatic reset.      */
     /**@}*/
 
     /**
@@ -199,20 +199,21 @@ struct helm_state
 /**
  * \brief Reset all tuning parameters, but \e not transient state.
  *
- * Resets gain to one and  disables filtering, integral action, and derivative
- * action.  Enable those terms by setting the associated time scales.
+ * Resets gain to one and disables filtering, integral action, and derivative
+ * action.  Enable those terms by setting their associated time scales.
  *
  * \param[in,out] h Houses tuning parameters to be reset.
  */
 static inline
-void
+struct helm_state *
 helm_reset(struct helm_state * const h)
 {
     h->kp = 1;        // Unit gain
-    h->Td = INFINITY; // No derivative action
-    h->Tf = 1;        // No filtering
+    h->Td = 0;        // No derivative action
+    h->Tf = INFINITY; // No filtering
     h->Ti = INFINITY; // No integral action
     h->Tt = INFINITY; // No automatic reset
+    return h;
 }
 
 /**
@@ -223,16 +224,18 @@ helm_reset(struct helm_state * const h)
  * including \e before the first call to helm_steady().
  *
  * \param[in,out] h Houses transient state to be reset.
+ * \return Argument \c h to permit call chaining.
  */
 static inline
-void
+struct helm_state *
 helm_approach(struct helm_state * const h)
 {
-    assert(h->Td > 0);
-    assert(h->Tf > 0);
-    assert(h->Ti > 0);
-    assert(h->Tt > 0);
+    assert(h->Td >= 0);
+    assert(h->Tf >  0);
+    assert(h->Ti >  0);
+    assert(h->Tt >  0);
     h->f = NAN;
+    return h;
 }
 
 /**

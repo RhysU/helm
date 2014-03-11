@@ -87,15 +87,24 @@ extern "C" {
  *             .
  * \f}
  * Here, to avoid controller kick on instantaneous reference value changes, we
- * assume \f$\frac{\mathrm{d}}{\mathrm{d}t} r(t) = 0\f$.  Multiplying by the
- * time differential, using first-order backward differences, and
- * incorporating the filter, one finds:
+ * assume \f$\frac{\mathrm{d}}{\mathrm{d}t} r(t) = 0\f$.  This assumption is
+ * sometimes called "derivative on measurement" in reference to neglecting the
+ * non-measured portion of the error derivative
+ * \f$\frac{\mathrm{d}}{\mathrm{d}t} e(t)\f$.
+ *
+ * Obtaining a discrete time evoluation equation is straightforward.  Multiply
+ * the above continuous result by the time differential, substitute first
+ * order backward differences, and incorporate the low-pass filter in a
+ * consistent fashion.  One finds:
  * \f{align}{
  *     {\mathrm{d}t}_i &= t_i - t_{i-1}
  * \f}
  * \f{align}{
- *     f_i &= \frac{ {\mathrm{d}t}_i\,y(t_i) + T_f\,f(t_{i-1}) }
+ *     f(t_i) &= \frac{ {\mathrm{d}t}_i\,y(t_i) + T_f\,f(t_{i-1}) }
  *                 { T_f + {\mathrm{d}t}_i }
+ *             = \alpha y(t_i) + (1 - \alpha) f_{i-1}
+ *               \quad\text{with }
+ *               \alpha=\frac{{\mathrm{d}t}_i}{T_f + {\mathrm{d}t}_i}
  * \f}
  * \f{align}{
  *     {\mathrm{d}f}_i &= f(t_i) - f(t_{i-1})

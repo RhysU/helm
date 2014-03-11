@@ -23,11 +23,12 @@ extern "C" {
 
 /**
  * \file
- * \brief A header-only C99 proportional-integral-derivative (PID) controller.
+ * A header-only PID controller based largely on <a
+ * href="http://www.cds.caltech.edu/~murray/amwiki/index.php/PID_Control">
+ * Chapter 10</a> of <a href="http://www.worldcat.org/isbn/0691135762">Astrom
+ * and Murray</a>
  *
- * \image html  helm.png "Controller block diagram"
- * \image latex helm.eps "Controller block diagram" width=\textwidth
- * This PID controller features
+ * This proportional-integral-derivative (PID) controller features
  * <ul>
  *   <li>low pass filtering of the process derivative,</li>
  *   <li>windup protection,</li>
@@ -38,22 +39,82 @@ extern "C" {
  *   <li>exposure of all independent physical time scales, and</li>
  *   <li>the ability to accommodate varying sample rate.</li>
  * </ul>
- * The design and nomenclature is based largely on Figure 10.11 in <a
- * href="http://www.worldcat.org/isbn/9781400828739">Feedback Systems</a> by
- * Astrom and Murray.
+ * \image html  helm.png "Controller block diagram"
+ * \image latex helm.eps "Controller block diagram" width=\textwidth
  *
- * In the time domain, the governing positional equation is
- * \f{align}{
- *  v(t) &= k_p e(t)
- *        + k_i \int_0^t e(t) \mathrm{d}t
- *        + k_t \int_0^t e_s(t) \mathrm{d}t
- *        - k_d \frac{\mathrm{d}}{\mathrm{d}t} f(t)
- * \f}
- * where
+ * Let \f$f\f$ be a first-order, low-pass filtered version of controlled process
+ * output \f$y\f$ governed by
  * \f{align}{
  *  T_f \frac{\mathrm{d}}{\mathrm{d}t} f &= y - f
  * \f}
- * provides low order filtering.
+ * where \f$T_f\f$ is a filter time scale.  Then, in the time domain and
+ * expressed in positional form, the control signal \f$v\f$ evolves according to
+ * \f{align}{
+ *     v(t) &= k_p \, e(t)
+ *           + k_i \int_0^t e(t) \,\mathrm{d}t
+ *           + k_t \int_0^t e_s(t) \,\mathrm{d}t
+ *           - k_d \frac{\mathrm{d}}{\mathrm{d}t} f(t)
+ *     \\
+ *          &= k_p \left[
+ *                 e(t)
+ *               + \frac{1}{T_i} \int_0^t e(t) \,\mathrm{d}t
+ *               + \frac{1}{T_t} \int_0^t e_s(t) \,\mathrm{d}t
+ *               - T_d \frac{\mathrm{d}}{\mathrm{d}t} f(t)
+ *             \right]
+ *     \\
+ *          &= k_p \left[
+ *                 \left(r(t) - y(t)\right)
+ *               + \frac{1}{T_i} \int_0^t \left(r(t) - y(t)\right) \,\mathrm{d}t
+ *               + \frac{1}{T_t} \int_0^t \left(u(t) - v(t)\right) \,\mathrm{d}t
+ *               + \frac{T_d}{T_f}\left(f(t) - y(t)\right)
+ *             \right]
+ * \f}
+ * where \f$u\f$ is the actuator position and \f$r\f$ is the desired reference
+ * or "setpoint" value.  Constants \f$T_i\f$, \f$T_t\f$, and \f$T_d\f$ are the
+ * integral, automatic reset, and derivative time scales while \f$k_p\f$
+ * specifies the unified gain.  Differentiating one finds the "incremental" form
+ * written for continuous time,
+ * \f{align}{
+ *     \frac{\mathrm{d}}{\mathrm{d}t} v(t) &= k_p \left[
+ *               - \frac{\mathrm{d}}{\mathrm{d}t} y(t)
+ *               + \frac{r(t) - y(t)}{T_i}
+ *               + \frac{u(t) - v(t)}{T_t}
+ *               + \frac{T_d}{T_f}\left(
+ *                   \frac{\mathrm{d}}{\mathrm{d}t} f(t)
+ *                 - \frac{\mathrm{d}}{\mathrm{d}t} y(t)
+ *                 \right)
+ *             \right]
+ *             .
+ * \f}
+ * Here, to avoid controller kick on instantaneous reference value changes, we
+ * assume \f$\frac{\mathrm{d}}{\mathrm{d}t} r(t) = 0\f$.  Multiplying by the
+ * time differential, using first-order backward differences, and
+ * incorporating the filter, one finds:
+ * \f{align}{
+ *     {\mathrm{d}t}_i &= t_i - t_{i-1}
+ * \f}
+ * \f{align}{
+ *     f_i &= \frac{ {\mathrm{d}t}_i\,y(t_i) + T_f\,f(t_{i-1}) }
+ *                 { T_f + {\mathrm{d}t}_i }
+ * \f}
+ * \f{align}{
+ *     {\mathrm{d}f}_i &= f(t_i) - f(t_{i-1})
+ *     &
+ *     {\mathrm{d}y}_i &= y(t_i) - y(t_{i-1})
+ * \f}
+ * \f{align}{
+ *     {\mathrm{d}v}_i &= k_p \left[
+ *               - {\mathrm{d}y}_i
+ *               + {\mathrm{d}t}_i \left(
+ *                   \frac{r(t_i) - y(t_i)}{T_i}
+ *                 + \frac{u(t_i) - v(t_i)}{T_t}
+ *                 \right)
+ *               + \frac{T_d}{T_f}\left(
+ *                   {\mathrm{d}f}_i - {\mathrm{d}y}_i
+ *                 \right)
+ *             \right]
+ * \f}
+ * 
  *
  * Sample written with nomenclature from helm_state() and helm_steady():
  * \code

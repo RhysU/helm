@@ -3,7 +3,8 @@ helm
 
 ![Controller block diagram](helm.png)
 
-This PID controller, implemented wholly within [helm.h], features:
+This proportional-integral-derivative (PID) controller, implemented wholly
+within [helm.h], features:
  * low pass filtering of the process derivative,
  * windup protection,
  * automatic reset on actuator saturation,

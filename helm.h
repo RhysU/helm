@@ -39,8 +39,8 @@ extern "C" {
  *   <li>exposure of all independent physical time scales, and</li>
  *   <li>the ability to accommodate varying sample rate.</li>
  * </ul>
- * \image html  helm.png "Controller block diagram"
- * \image latex helm.eps "Controller block diagram" width=\textwidth
+ * \image html  helm.png "Block diagram for the controller"
+ * \image latex helm.eps "Block diagram for the controller" width=\textwidth
  *
  * Let \f$f\f$ be a first-order, low-pass filtered version of controlled process
  * output \f$y\f$ governed by
@@ -123,7 +123,7 @@ extern "C" {
  *                 \right)
  *             \right]
  * \f}
- * 
+ *
  *
  * Sample written with nomenclature from helm_state() and helm_steady():
  * \code
@@ -174,7 +174,7 @@ struct helm_state
      * All other time scales possess units of time.
      *
      * Setting a time scale to \c INFINITY disables the associated term.
-     * 
+     *
      * @{
      */
     double kp;  /**< Proportional gain modifying P, I, and D terms.  */
@@ -198,6 +198,8 @@ struct helm_state
  *
  * Resets gain to one and  disables filtering, integral action, and derivative
  * action.  Enable those terms by setting the associated time scales.
+ *
+ * \param[in,out] h  Houses tuning parameters to be reset.
  */
 static inline
 void
@@ -215,6 +217,8 @@ helm_reset(struct helm_state * const h)
  *
  * Necessary to achieve bumpless manual-to-automatic transitions
  * before calling to helm_steady() after a period of manual control.
+ *
+ * \param[in,out] h  Houses transient state to be reset.
  */
 static inline
 void

@@ -127,7 +127,7 @@ extern "C" {
  * needs only to track two pieces of state, namely \f$f(t_{i-1})\f$ and
  * \f$y(t_{i-1})\f$, across time steps.
  *
- * Sample written with nomenclature from helm_state() and helm_steady():
+ * Sample written with nomenclature from helm_state and helm_steady():
  * \code
  *   struct helm_state h;
  *

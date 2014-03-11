@@ -164,37 +164,27 @@ extern "C" {
  */
 
 /**
- * State for an incremental PID controller, including all tuning parameters.
+ * Tuning parameters and internal state for an incremental PID controller.
+ *
+ * Gain #kp has units of \f$u_0 / y_0\f$ where \f$u_0\f$ and \f$y_0\f$
+ * are the natural actuator and process observable signals, respectively.
+ * Parameter #Tt has units of time multiplied by \f$u_0 / y_0\f$.
+ * Parameters #Td, #Tf, and #Ti possess units of time.  Time units are
+ * fixed by the scaling provided in the \c dt argument to helm_steady().
  */
 struct helm_state
 {
-    /**
-     * Controller tuning parameters.
-     *
-     * Gain has units of <code>u0 / y0</code>.
-     * Tt has units of time multiplied by <code>u0 / y0</code>.
-     * All other time scales possess units of time.
-     *
-     * @{
-     */
-    double kp;  /**< Proportional gain modifying P, I, and D terms.   */
+    double kp;  /**< Proportional gain modifying P, I, and D terms.    */
     double Td;  /**< Time scale governing derivative action.
-                     Set to zero to disable derivative control.       */
+                     Set to zero to disable derivative control.        */
     double Tf;  /**< Time scale filtering process observable for D.
-                     Set to infinity to disable observable filtering. */
+                     Set to infinity to disable observable filtering.  */
     double Ti;  /**< Time scale governing integral action.
-                     Set to infinity to disable integral control.     */
+                     Set to infinity to disable integral control.      */
     double Tt;  /**< Time scale governing automatic reset.
-                     Set to infinity to disable automatic reset.      */
-    /**@}*/
-
-    /**
-     * Internal state maintained between calls to helm_steady().
-     * @{
-     */
-    double y;   /**< Tracks the instantaneous process observable. */
-    double f;   /**< Tracks the filtered process observable.      */
-    /**@}*/
+                     Set to infinity to disable automatic reset.       */
+    double y;   /**< Internal tracking of the process observable.      */
+    double f;   /**< Internal tracking the filtered process.           */
 };
 
 /**

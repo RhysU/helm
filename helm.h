@@ -18,7 +18,6 @@
 extern "C" {
 #endif
 
-// TODO Document the continuous time and discretized equations
 // FIXME Check claims on no filtering with Tf = 1
 
 /**
@@ -95,7 +94,7 @@ extern "C" {
  * Obtaining a discrete time evoluation equation is straightforward.  Multiply
  * the above continuous result by the time differential, substitute first
  * order backward differences, and incorporate the low-pass filter in a
- * consistent fashion.  One finds:
+ * consistent fashion.  One finds the following sequence of computations
  * \f{align}{
  *     {\mathrm{d}t}_i &= t_i - t_{i-1}
  * \f}
@@ -108,22 +107,26 @@ extern "C" {
  * \f}
  * \f{align}{
  *     {\mathrm{d}f}_i &= f(t_i) - f(t_{i-1})
- *     &
+ * \f}
+ * \f{align}{
  *     {\mathrm{d}y}_i &= y(t_i) - y(t_{i-1})
  * \f}
  * \f{align}{
  *     {\mathrm{d}v}_i &= k_p \left[
- *               - {\mathrm{d}y}_i
- *               + {\mathrm{d}t}_i \left(
+ *                 {\mathrm{d}t}_i \left(
  *                   \frac{r(t_i) - y(t_i)}{T_i}
  *                 + \frac{u(t_i) - v(t_i)}{T_t}
  *                 \right)
  *               + \frac{T_d}{T_f}\left(
  *                   {\mathrm{d}f}_i - {\mathrm{d}y}_i
  *                 \right)
+ *               - {\mathrm{d}y}_i
  *             \right]
  * \f}
- *
+ * where notice \f$f(t)\f$ is nothing but an exponential weighted moving average
+ * of \f$y(t)\f$ that permits varying sampling rate.  An implementation needs
+ * only to track two pieces of state, namely \f$f(t_{i-1})\f$ and
+ * \f$y(t_{i-1})\f$, across time steps.
  *
  * Sample written with nomenclature from helm_state() and helm_steady():
  * \code
@@ -188,8 +191,8 @@ struct helm_state
      * Internal state maintained between calls to helm_steady().
      * @{
      */
-    double y;   /**< Tracks instantaneous process observable. */
-    double f;   /**< Tracks filtered process observable.      */
+    double y;   /**< Tracks the instantaneous process observable. */
+    double f;   /**< Tracks the filtered process observable.      */
     /**@}*/
 };
 
@@ -199,7 +202,7 @@ struct helm_state
  * Resets gain to one and  disables filtering, integral action, and derivative
  * action.  Enable those terms by setting the associated time scales.
  *
- * \param[in,out] h  Houses tuning parameters to be reset.
+ * \param[in,out] h Houses tuning parameters to be reset.
  */
 static inline
 void
@@ -213,12 +216,13 @@ helm_reset(struct helm_state * const h)
 }
 
 /**
- * \brief Forget any transient state, but \e not tuning parameters.
+ * \brief Reset any transient state, but \e not tuning parameters.
  *
  * Necessary to achieve bumpless manual-to-automatic transitions
- * before calling to helm_steady() after a period of manual control.
+ * before calling to helm_steady() after a period of manual control,
+ * including \e before the first call to helm_steady().
  *
- * \param[in,out] h  Houses transient state to be reset.
+ * \param[in,out] h Houses transient state to be reset.
  */
 static inline
 void

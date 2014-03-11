@@ -26,3 +26,22 @@ helm.svg: helm.dot ; dot $M -Tsvg      -o $@
 helm.eps: helm.dot ; dot $M -Tps:cairo -o $@
 
 endif
+
+###################################################################
+# Build Doxygen
+# FIXME Require version 1.8.3+ for full Markdown support
+###################################################################
+DOXYGEN ?= $(shell which doxygen)
+ifneq "$(DOXYGEN)" ""
+
+all:  docs
+docs: Doxyfile README.md
+docs: $(wildcard *.c)   $(wildcard *.h)
+docs: $(wildcard *.png) $(wildcard *.eps)
+	doxygen Doxyfile
+clean: clean-docs
+clean-docs:
+	rm -rf html latex
+
+endif
+

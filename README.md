@@ -17,6 +17,6 @@ within [helm.h], features:
 References
 ----------
 
--- Åström, Karl J. and Richard M. Murray. [Feedback systems: an introduction for scientists and engineers](http://www.worldcat.org/isbn/9781400828739). Princeton University Press, April 2008. [Available online](http://www.cds.caltech.edu/~murray/amwiki/index.php/Main_Page).
+-- Astrom, Karl J. and Richard M. Murray. [Feedback systems: an introduction for scientists and engineers](http://www.worldcat.org/isbn/9781400828739). Princeton University Press, April 2008. [Available online](http://www.cds.caltech.edu/~murray/amwiki/index.php/Main_Page).
 
 -- Wescott, Tim. [Applied control theory for embedded systems](http://www.worldcat.org/ibsn/978-0750678391). Newnes, 2006.

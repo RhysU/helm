@@ -110,7 +110,28 @@ advance(const double h,
         const double a[static 3],
         const double b[static 1],
         const double u[static 1],
-              double y[static 3]);
+              double y[static 3])
+{
+    const double rhs[3] = {
+        y[0],
+        y[1],
+        y[2] + b[0]*u[0]
+    };
+    const double cof[3][3] = {
+        { h*(a[2] + a[1]*h) + 1 , h*(a[2]*h + 1)     , h*h },
+        { -a[0]*h*h             , a[2]*h + 1         , h   },
+        { -a[0]*h               , -h*(a[1] + a[0]*h) , 1   }
+    };
+    const double det = h*(h*(a[0]*h + a[1]) + a[2]) + 1;
+
+    for (int i = 0; i < 3; ++i) {
+        y[i] = 0;
+        for (int j = 0; j < 3; ++j) {
+            y[i] += cof[i][j]*rhs[j];
+        }
+        y[i] /= det;
+    }
+}
 
 int
 main (int argc, char *argv[])

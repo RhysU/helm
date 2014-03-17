@@ -224,8 +224,8 @@ main (int argc, char *argv[])
     }
 
     // Initialize state
-    double u[1] = {r};        // Actuator signal
-    double v[1] = {r};        // Control signal
+    double u[1] = {0};        // Actuator signal
+    double v[1] = {0};        // Control signal
     double y[3] = {0, 0, 0};  // Model state
 
     // Initialize controller setting PID parameters from kp, ki, and kd
@@ -237,14 +237,13 @@ main (int argc, char *argv[])
     h.Ti = h.kp / ki;  // Convert to integral time scale
 
     // Simulate controlled model, outputting status after each step
-    // TODO Clean up the absolute time handling as roundoff avoidance got ugly
     helm_approach(&h);
-    for (size_t i = 0; i*t < T+t; ++i) {
-        v[0] += helm_steady(&h, t, r, u[0], v[0], y[0]);         // Control
-        u[0]  = v[0];                                            // Ideal
-        advance((i*t > T ? T - (i-1)*t : t), a, b, u, y);        // Advance
+    for (size_t i = 0; i*t < T+t;) {
+        advance((++i*t > T ? T - (i-1)*t : t), a, b, u, y);      // Advance
         printf("%-22.16g\t%-22.16g\t%-22.16g\t%-22.16g\t%-22.16g\n",
                i*t > T ? T : i*t, u[0], y[0], y[1], y[2]);       // Output
+        v[0] += helm_steady(&h, t, r, u[0], v[0], y[0]);         // Control
+        u[0]  = v[0];                                            // Ideal
     }
 
     return EXIT_SUCCESS;

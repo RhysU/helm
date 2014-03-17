@@ -132,18 +132,18 @@ extern "C" {
  *   struct helm_state h;
  *
  *   // Set PID parameters from commonly given \c kp, \c ki, \c kt, and \c kd
- *   helm_reset(h);
- *   h->kp = kp;
- *   h->Td = kd / h->kp;
- *   h->Tf = h->Td / 10;  // Astrom and Murray p.308 suggests 2--20
- *   h->Ti = h->kp / ki;
- *   h->Tt = h->kp / kt;
+ *   helm_reset(&h);
+ *   h.kp = kp;
+ *   h.Td = kd / h.kp;
+ *   h.Tf = h.Td / 10;  // Astrom and Murray p.308 suggests 2--20
+ *   h.Ti = h.kp / ki;
+ *   h.Tt = h.kp / kt;
  *
  *   // Enable automatic control and evolve
- *   helm_approach(h);
+ *   helm_approach(&h);
  *   for (int i = 0; i < N; ++i) {
  *      y  = process(dt, u);
- *      v += helm_steady(h, dt, r, u, v, y);
+ *      v += helm_steady(&h, dt, r, u, v, y);
  *      u  = actuate(dt, v);
  *   }
  *
@@ -154,10 +154,10 @@ extern "C" {
  *   }
  *
  *   // Re-enable automatic control and evolve
- *   helm_approach(h);
+ *   helm_approach(&h);
  *   for (int i = 0; i < N; ++i) {
  *      y  = process(dt, u);
- *      v += helm_steady(h, dt, r, u, v, y);
+ *      v += helm_steady(&h, dt, r, u, v, y);
  *      u  = actuate(dt, v);
  *   }
  * \endcode

@@ -7,11 +7,12 @@ endif
 HOWFAST ?= -g -O2 -DNDEBUG
 CFLAGS  ?= $(HOWSTRICT) $(HOWFAST)
 
-all:       helm.o
+all:       helm.o step3
 helm.o:    helm.c helm.h
+step3.o:   step3.c helm.h
 
 clean:
-	rm -f *.o
+	rm -f *.o step3
 
 ###################################################################
 # Build Graphviz-based block diagram

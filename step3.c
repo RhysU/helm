@@ -133,6 +133,10 @@ advance(const double h,
 
 static const double default_a[3] = {1, 3, 3}; ///< Default process parameters
 static const double default_b[1] = {1};       ///< Default process parameters
+static const double default_kd   = 0;         ///< Default derivative gain
+static const double default_ki   = 0;         ///< Default integration gain
+static const double default_kp   = 1;         ///< Default proportional gain
+static const double default_r    = 1;         ///< Default reference value
 static const double default_t    = 0.05;      ///< Default time step size
 static const double default_T    = 20;        ///< Default final time
 
@@ -152,12 +156,17 @@ print_usage(const char *arg0, FILE *out)
     fprintf(out, "  -2 a2\t\tSet coefficient a2 (default %g)\n", default_a[2]);
     fprintf(out, "  -b b0\t\tSet coefficient b0 (default %g)\n", default_b[0]);
     fputc('\n', out);
-    fprintf(out, "Time advancement:\n");
-    fprintf(out, "  -t dt\t\tSet time step size (default %g)\n", default_t);
-    fprintf(out, "  -T Tf\t\tSet final time     (default %g)\n", default_T);
+    fprintf(out, "Term-by-term, parallel-form PID gains:\n");
+    fprintf(out, "  -p kp\t\tProportional gain  (default %g)\n", default_kp);
+    fprintf(out, "  -i ki\t\tIntegral gain      (default %g)\n", default_ki);
+    fprintf(out, "  -d kd\t\tDerivative gain    (default %g)\n", default_kd);
+    fprintf(out, "  -r ref\t\tReference value   (default %g)\n", default_r);
     fputc('\n', out);
     fprintf(out, "Miscellaneous:\n");
-    fprintf(out, "  -h   \t\tDisplay this help and exit\n");
+    fprintf(out, "  -r r \t\tAdjust setpoint    (default %g)\n", default_r);
+    fprintf(out, "  -t dt\t\tSet time step size (default %g)\n", default_t);
+    fprintf(out, "  -T Tf\t\tSet final time     (default %g)\n", default_T);
+    fprintf(out, "  -h    \t\tDisplay this help and exit\n");
 }
 
 /**
@@ -172,21 +181,28 @@ print_usage(const char *arg0, FILE *out)
 int
 main (int argc, char *argv[])
 {
-    // Establish mutable settings and state
+    // Establish mutable settings
     double a[3] = {default_a[0], default_a[1], default_a[2]};
     double b[1] = {default_b[0]};
+    double kd   = default_kd;
+    double ki   = default_ki;
+    double kp   = default_kp;
+    double r    = default_r;
     double t    = default_t;
     double T    = default_T;
-    double u[1] = {0};
-    double y[3] = {0, 0, 0};
 
     // Process incoming arguments
-    for (int option; -1 != (option = getopt(argc, argv, "0:1:2:b:t:T:h"));) {
-        switch (option) {
+    static const char optstring[] = "0:1:2:b:d:i:p:r:t:T:h";
+    for (int opt; -1 != (opt = getopt(argc, argv, optstring));) {
+        switch (opt) {
         case '0': a[0] = atof(optarg);          break;
         case '1': a[1] = atof(optarg);          break;
         case '2': a[2] = atof(optarg);          break;
         case 'b': b[0] = atof(optarg);          break;
+        case 'd': kd   = atof(optarg);          break;
+        case 'i': ki   = atof(optarg);          break;
+        case 'p': kp   = atof(optarg);          break;
+        case 'r': r    = atof(optarg);          break;
         case 't': t    = atof(optarg);          break;
         case 'T': T    = atof(optarg);          break;
         case 'h': print_usage(argv[0], stdout); return EXIT_SUCCESS;
@@ -204,11 +220,27 @@ main (int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    // Advance simulation time, outputting status after each step
+    // Initialize state
+    double u[1] = {0};        // Actuator signal
+    double v[1] = {0};        // Control signal
+    double y[3] = {0, 0, 0};  // Model state
+
+    // Initialize controller setting PID parameters from kp, ki, and kd
+    struct helm_state h;
+    helm_reset(&h);
+    h.kp = kp;
+    h.Td = kd / h.kp;
+    h.Tf = h.Td /  2;  // Astrom and Murray p.308 suggests 2--20
+    h.Ti = h.kp / ki;
+
+    // Simulate controlled model, outputting status after each step
+    helm_approach(&h);
     for (size_t i = 0; i*t < T; ++i) {
-        advance((i*t > T ? T - (i-1)*t : t), a, b, u, y);
-        printf("%.16g\t%.16g\t%.16g\t%.16g\t%.16g\n",
+        advance((i*t > T ? T - (i-1)*t : t), a, b, u, y); // Advance model
+        printf("%.16g\t%.16g\t%.16g\t%.16g\t%.16g\n",     // Output state
                i*t, u[0], y[0], y[1], y[2]);
+        v[0] += helm_steady(&h, t, r, u[0], v[0], y[0]);  // Control signal
+        u[0]  = v[0];                                     // No saturation
     }
     printf("%.16g\t%.16g\t%.16g\t%.16g\t%.16g\n",
            T, u[0], y[0], y[1], y[2]);

@@ -9,15 +9,13 @@
 //--------------------------------------------------------------------------
 
 /** \file
- * Example controlling a 3rd order ODE across a unit step in the setpoint.
+ * Sample controlling a 3rd order system across a unit step in the setpoint.
  *
- * FIXME
- * This system of ODEs may be used to simulate the temporal response of a system
- * given a unit step input.  That is, just prior to time zero process state
- * \f$y(t)\f$, reference value \f$r(t)\f$, actuator signal \f$u(t)\f$, and all
- * of their derivatives are zero.  At time zero, step change \f$r(t) = 1\f$ is
- * introduced.  These ODEs, in conjunction with the controller dynamics (and
- * any discretization choices), determine the controlled system response.
+ * This sample can be used to test controller behavior against known good
+ * results.  For example, those presented in Figure 10.2 within <a
+ * href="http://www.cds.caltech.edu/~murray/amwiki/index.php/PID_Control">
+ * Chapter 10</a> of <a href="http://www.worldcat.org/isbn/0691135762">Astrom
+ * and Murray</a>.
  */
 
 #include <getopt.h>
@@ -28,8 +26,8 @@
 #include "helm.h"
 
 /**
- * Advance the temporal state of a model given by transfer function
- * \f$ \frac{y(s)}{u(s)} = \frac{b_0}{s^3 + a_2 s^2 + a_1 s + a_0} \f$.
+ * Advance the temporal state of a model given by transfer function \f$
+ * \frac{y(s)}{u(s)} = \frac{b_0}{s^3 + a_2 s^2 + a_1 s + a_0} \f$.
  *
  * Given the process transfer function
  * \f{align}{
@@ -107,10 +105,10 @@
 static
 void
 advance(const double h,
-        const double a[static 3],
-        const double b[static 1],
-        const double u[static 1],
-              double y[static 3])
+        const double a[restrict static 3],
+        const double b[restrict static 1],
+        const double u[restrict static 1],
+              double y[restrict static 3])
 {
     const double rhs[3] = {
         y[0],
@@ -133,12 +131,67 @@ advance(const double h,
     }
 }
 
+//
+static const double default_a[3] = {1, 3, 3};
+static const double default_b[1] = {1};
+static const double default_t    = 0.05;
+static const double default_T    = 20;
+
+/** Print usage on the given stream. */
+static
+void
+print_usage(const char *arg0, FILE *out)
+{
+    fprintf(out, "Usage: %s [OPTION...]\n", arg0);
+    fprintf(out, "Control 3rd-order system across a setpoint step change.\n");
+    fprintf(out, "Output is tab-delimited t, u, y[0], y[1], y[2].\n");
+    fputc('\n', out);
+    fprintf(out, "Process transfer function"
+                    "y(s)/u(s) = b0 / (s^3 + a2 s^2 + a1 s + a0):\n");
+    fprintf(out, "  -0 a0\t\tSet coefficient a0 (default %g)\n", default_a[0]);
+    fprintf(out, "  -1 a1\t\tSet coefficient a1 (default %g)\n", default_a[1]);
+    fprintf(out, "  -2 a2\t\tSet coefficient a2 (default %g)\n", default_a[2]);
+    fprintf(out, "  -b b0\t\tSet coefficient b0 (default %g)\n", default_b[0]);
+    fputc('\n', out);
+    fprintf(out, "Time advancement:\n");
+    fprintf(out, "  -t dt\t\tSet time step size (default %g)\n", default_t);
+    fprintf(out, "  -T Tf\t\tSet final time     (default %g)\n", default_T);
+    fputc('\n', out);
+    fprintf(out, "Miscellaneous:\n");
+    fprintf(out, "  -h   \t\tDisplay this help and exit\n");
+}
+
+/**
+ * Control the process with transfer function \f$ \frac{y(s)}{u(s)} =
+ * \frac{b_0}{s^3 + a_2 s^2 + a_1 s + a_0} \f$ across a unit step change in
+ * setpoint value.  That is, just prior to time zero process state \f$y(t)\f$,
+ * reference value \f$r(t)\f$, actuator signal \f$u(t)\f$, and all of their
+ * derivatives are zero.  At time zero, step change \f$r(t) = 1\f$ is
+ * introduced.  The transfer function, in conjunction with the controller
+ * dynamics, determines the controlled system response.
+ */
 int
 main (int argc, char *argv[])
 {
-    // TODO
-    double a[3] = {1, 3, 3};  // Based on Astrom & Murray Figure 10.2 example
-    double b[1] = {1};        // Ditto
+    double a[3] = {default_a[0], default_a[1], default_a[2]};
+    double b[1] = {default_b[0]};
+    double t    = default_t;
+    double T    = default_T;
+    double u[1] = {0};
+    double y[3] = {0, 0, 0};
+
+    for (int option; -1 != (option = getopt(argc, argv, "0:1:2:b:t:T:h"));) {
+        switch (option) {
+        case '0': a[0] = atof(optarg);          break;
+        case '1': a[1] = atof(optarg);          break;
+        case '2': a[2] = atof(optarg);          break;
+        case 'b': b[0] = atof(optarg);          break;
+        case 't': t    = atof(optarg);          break;
+        case 'T': T    = atof(optarg);          break;
+        case 'h': print_usage(argv[0], stdout); return EXIT_SUCCESS;
+        default:  print_usage(argv[0], stderr); return EXIT_FAILURE;
+        }
+    }
 
     return EXIT_SUCCESS;
 }

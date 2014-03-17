@@ -9,7 +9,7 @@
 //--------------------------------------------------------------------------
 
 /** \file
- * C99 extern declarations for state inline functions within \ref helm.h
+ * C99 extern declarations for state inline functions within \ref helm.h.
  */
 
 #include "helm.h"

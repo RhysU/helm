@@ -162,7 +162,7 @@ print_usage(const char *arg0, FILE *out)
     fprintf(out, "  -i ki\t\tIntegral gain      (default %g)\n", default_ki);
     fprintf(out, "  -d kd\t\tDerivative gain    (default %g)\n", default_kd);
     fprintf(out, "  -f Tf\t\tFilter time scale  (default %g)\n", default_f);
-    fprintf(out, "  -r ref\t\tReference value   (default %g)\n", default_r);
+    fprintf(out, "  -r sp\t\tReference value   (default %g)\n", default_r);
     fputc('\n', out);
     fprintf(out, "Miscellaneous:\n");
     fprintf(out, "  -r r \t\tAdjust setpoint    (default %g)\n", default_r);

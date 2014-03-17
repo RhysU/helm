@@ -133,6 +133,7 @@ advance(const double h,
 
 static const double default_a[3] = {1, 3, 3}; ///< Default process parameters
 static const double default_b[1] = {1};       ///< Default process parameters
+static const double default_f    = 0.01;      ///< Default filter time scale
 static const double default_kd   = 0;         ///< Default derivative gain
 static const double default_ki   = 0;         ///< Default integration gain
 static const double default_kp   = 1;         ///< Default proportional gain
@@ -156,10 +157,11 @@ print_usage(const char *arg0, FILE *out)
     fprintf(out, "  -2 a2\t\tSet coefficient a2 (default %g)\n", default_a[2]);
     fprintf(out, "  -b b0\t\tSet coefficient b0 (default %g)\n", default_b[0]);
     fputc('\n', out);
-    fprintf(out, "Term-by-term, parallel-form PID gains:\n");
+    fprintf(out, "Term-by-term, parallel-form PID settings\n");
     fprintf(out, "  -p kp\t\tProportional gain  (default %g)\n", default_kp);
     fprintf(out, "  -i ki\t\tIntegral gain      (default %g)\n", default_ki);
     fprintf(out, "  -d kd\t\tDerivative gain    (default %g)\n", default_kd);
+    fprintf(out, "  -f Tf\t\tFilter time scale  (default %g)\n", default_f);
     fprintf(out, "  -r ref\t\tReference value   (default %g)\n", default_r);
     fputc('\n', out);
     fprintf(out, "Miscellaneous:\n");
@@ -184,6 +186,7 @@ main (int argc, char *argv[])
     // Establish mutable settings
     double a[3] = {default_a[0], default_a[1], default_a[2]};
     double b[1] = {default_b[0]};
+    double f    = default_f;
     double kd   = default_kd;
     double ki   = default_ki;
     double kp   = default_kp;
@@ -228,10 +231,10 @@ main (int argc, char *argv[])
     // Initialize controller setting PID parameters from kp, ki, and kd
     struct helm_state h;
     helm_reset(&h);
-    h.kp = kp;
-    h.Td = kd / h.kp;
-    h.Tf = h.Td /  2;  // Astrom and Murray p.308 suggests 2--20
-    h.Ti = h.kp / ki;
+    h.kp = kp;         // Unified gain
+    h.Td = kd / h.kp;  // Convert to derivative time scale
+    h.Tf = f;          // Astrom and Murray p.308 suggests (h.Td / 2--20)
+    h.Ti = h.kp / ki;  // Convert to integral time scale
 
     // Simulate controlled model, outputting status after each step
     helm_approach(&h);

@@ -135,7 +135,7 @@ static const double default_a[3] = {1, 3, 3}; ///< Default process parameters
 static const double default_b[1] = {1};       ///< Default process parameters
 static const double default_f    = 0.01;      ///< Default filter time scale
 static const double default_kd   = 0;         ///< Default derivative gain
-static const double default_ki   = 0;         ///< Default integration gain
+static const double default_ki   = 0.2;       ///< Default integration gain
 static const double default_kp   = 1;         ///< Default proportional gain
 static const double default_r    = 1;         ///< Default reference value
 static const double default_t    = 0.05;      ///< Default time step size
@@ -224,8 +224,8 @@ main (int argc, char *argv[])
     }
 
     // Initialize state
-    double u[1] = {0};        // Actuator signal
-    double v[1] = {0};        // Control signal
+    double u[1] = {r};        // Actuator signal
+    double v[1] = {r};        // Control signal
     double y[3] = {0, 0, 0};  // Model state
 
     // Initialize controller setting PID parameters from kp, ki, and kd
@@ -239,13 +239,13 @@ main (int argc, char *argv[])
     // Simulate controlled model, outputting status after each step
     helm_approach(&h);
     for (size_t i = 0; i*t < T; ++i) {
-        advance((i*t > T ? T - (i-1)*t : t), a, b, u, y); // Advance model
-        printf("%.16g\t%.16g\t%.16g\t%.16g\t%.16g\n",     // Output state
-               i*t, u[0], y[0], y[1], y[2]);
-        v[0] += helm_steady(&h, t, r, u[0], v[0], y[0]);  // Control signal
-        u[0]  = v[0];                                     // No saturation
+        advance((i*t > T ? T - (i-1)*t : t), a, b, u, y);        // Advance
+        printf("%-22.16g\t%-22.16g\t%-22.16g\t%-22.16g\t%-22.16g\n",
+               i*t, u[0], y[0], y[1], y[2]);                     // Output
+        v[0] += helm_steady(&h, t, r, u[0], v[0], y[0]);         // Control
+        u[0]  = v[0];                                            // Ideal
     }
-    printf("%.16g\t%.16g\t%.16g\t%.16g\t%.16g\n",
+    printf("%-22.16g\t%-22.16g\t%-22.16g\t%-22.16g\t%-22.16g\n",
            T, u[0], y[0], y[1], y[2]);
 
     return EXIT_SUCCESS;

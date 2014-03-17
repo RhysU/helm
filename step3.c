@@ -178,7 +178,7 @@ main (int argc, char *argv[])
     double t    = default_t;
     double T    = default_T;
     double u[1] = {0};
-    double y[3] = {1, 1, 1};
+    double y[3] = {0, 0, 0};
 
     // Process incoming arguments
     for (int option; -1 != (option = getopt(argc, argv, "0:1:2:b:t:T:h"));) {

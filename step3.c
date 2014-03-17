@@ -162,7 +162,7 @@ print_usage(const char *arg0, FILE *out)
     fprintf(out, "  -i ki\t\tIntegral gain      (default %g)\n", default_ki);
     fprintf(out, "  -d kd\t\tDerivative gain    (default %g)\n", default_kd);
     fprintf(out, "  -f Tf\t\tFilter time scale  (default %g)\n", default_f);
-    fprintf(out, "  -r sp\t\tReference value   (default %g)\n", default_r);
+    fprintf(out, "  -r sp\t\tReference value    (default %g)\n", default_r);
     fputc('\n', out);
     fprintf(out, "Miscellaneous:\n");
     fprintf(out, "  -r r \t\tAdjust setpoint    (default %g)\n", default_r);
@@ -195,7 +195,7 @@ main (int argc, char *argv[])
     double T    = default_T;
 
     // Process incoming arguments
-    static const char optstring[] = "0:1:2:b:d:i:p:r:t:T:h";
+    static const char optstring[] = "0:1:2:b:d:f:i:p:r:t:T:h";
     for (int opt; -1 != (opt = getopt(argc, argv, optstring));) {
         switch (opt) {
         case '0': a[0] = atof(optarg);          break;
@@ -203,6 +203,7 @@ main (int argc, char *argv[])
         case '2': a[2] = atof(optarg);          break;
         case 'b': b[0] = atof(optarg);          break;
         case 'd': kd   = atof(optarg);          break;
+        case 'f': f    = atof(optarg);          break;
         case 'i': ki   = atof(optarg);          break;
         case 'p': kp   = atof(optarg);          break;
         case 'r': r    = atof(optarg);          break;

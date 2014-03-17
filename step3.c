@@ -134,12 +134,12 @@ advance(const double h,
 static const double default_a[3] = {1, 3, 3}; ///< Default process parameters
 static const double default_b[1] = {1};       ///< Default process parameters
 static const double default_f    = 0.01;      ///< Default filter time scale
-static const double default_kd   = 0;         ///< Default derivative gain
-static const double default_ki   = 0.2;       ///< Default integration gain
+static const double default_kd   = 1;         ///< Default derivative gain
+static const double default_ki   = 1;         ///< Default integration gain
 static const double default_kp   = 1;         ///< Default proportional gain
 static const double default_r    = 1;         ///< Default reference value
-static const double default_t    = 0.25;      ///< Default time step size
-static const double default_T    = 20;        ///< Default final time
+static const double default_t    = 1;         ///< Default time step size
+static const double default_T    = 25;        ///< Default final time
 
 /** Print usage on the given stream. */
 static

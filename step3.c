@@ -131,11 +131,10 @@ advance(const double h,
     }
 }
 
-//
-static const double default_a[3] = {1, 3, 3};
-static const double default_b[1] = {1};
-static const double default_t    = 0.05;
-static const double default_T    = 20;
+static const double default_a[3] = {1, 3, 3}; ///< Default process parameters
+static const double default_b[1] = {1};       ///< Default process parameters
+static const double default_t    = 0.05;      ///< Default time step size
+static const double default_T    = 20;        ///< Default final time
 
 /** Print usage on the given stream. */
 static
@@ -173,6 +172,7 @@ print_usage(const char *arg0, FILE *out)
 int
 main (int argc, char *argv[])
 {
+    // Establish mutable settings and state
     double a[3] = {default_a[0], default_a[1], default_a[2]};
     double b[1] = {default_b[0]};
     double t    = default_t;
@@ -180,6 +180,7 @@ main (int argc, char *argv[])
     double u[1] = {0};
     double y[3] = {0, 0, 0};
 
+    // Process incoming arguments
     for (int option; -1 != (option = getopt(argc, argv, "0:1:2:b:t:T:h"));) {
         switch (option) {
         case '0': a[0] = atof(optarg);          break;
@@ -192,6 +193,25 @@ main (int argc, char *argv[])
         default:  print_usage(argv[0], stderr); return EXIT_FAILURE;
         }
     }
+
+    // Avoid infinite loops by sanitizing inputs
+    if (t <= 0) {
+        fprintf(stderr, "Step size t must be strictly positive\n");
+        return EXIT_FAILURE;
+    }
+    if (T <= 0) {
+        fprintf(stderr, "Final time T must be strictly positive\n");
+        return EXIT_FAILURE;
+    }
+
+    // Advance simulation time, outputting status after each step
+    for (size_t i = 0; i*t < T; ++i) {
+        advance((i*t > T ? T - (i-1)*t : t), a, b, u, y);
+        printf("%.16g\t%.16g\t%.16g\t%.16g\t%.16g\n",
+               i*t, u[0], y[0], y[1], y[2]);
+    }
+    printf("%.16g\t%.16g\t%.16g\t%.16g\t%.16g\n",
+           T, u[0], y[0], y[1], y[2]);
 
     return EXIT_SUCCESS;
 }

@@ -168,7 +168,7 @@ print_usage(const char *arg0, FILE *out)
     fprintf(out, "  -r r \t\tAdjust setpoint    (default %g)\n", default_r);
     fprintf(out, "  -t dt\t\tSet time step size (default %g)\n", default_t);
     fprintf(out, "  -T Tf\t\tSet final time     (default %g)\n", default_T);
-    fprintf(out, "  -h    \t\tDisplay this help and exit\n");
+    fprintf(out, "  -h\t\tDisplay this help and exit\n");
 }
 
 /**

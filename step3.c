@@ -150,7 +150,7 @@ print_usage(const char *arg0, FILE *out)
     fprintf(out, "Control 3rd-order system across a setpoint step change.\n");
     fprintf(out, "Output is tab-delimited t, u, y[0], y[1], y[2].\n");
     fputc('\n', out);
-    fprintf(out, "Process transfer function"
+    fprintf(out, "Process transfer function "
                     "y(s)/u(s) = b0 / (s^3 + a2 s^2 + a1 s + a0):\n");
     fprintf(out, "  -0 a0\t\tSet coefficient a0 (default %g)\n", default_a[0]);
     fprintf(out, "  -1 a1\t\tSet coefficient a1 (default %g)\n", default_a[1]);

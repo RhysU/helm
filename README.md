@@ -1,6 +1,10 @@
 helm
 ====
 
+Project home: https://github.com/RhysU/helm
+
+API documentation: https://rhysu.github.io/helm/
+
 ![Controller block diagram](helm.png)
 
 This proportional-integral-derivative (PID) controller, implemented wholly

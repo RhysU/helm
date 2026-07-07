@@ -1,0 +1,65 @@
+version: 2.1
+
+executors:
+  ubuntu-docker:
+    parameters:
+      version:
+        type: string
+    docker:
+      - image: cimg/base:<< parameters.version >>
+    resource_class: small
+
+jobs:
+  test:
+    parameters:
+      version:
+        type: string
+    executor:
+      name: ubuntu-docker
+      version: << parameters.version >>
+    resource_class: medium
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: make helm.o step3
+
+  deploy-docs:
+    executor:
+      name: ubuntu-docker
+      version: current
+    resource_class: small
+    steps:
+      - checkout
+      - run:
+          name: Install Doxygen and Graphviz
+          command: |
+            sudo apt-get update -qq
+            sudo apt-get install -yqq doxygen graphviz
+      - run:
+          name: Build documentation
+          command: |
+            doxygen Doxyfile
+      - run:
+          name: Deploy to gh-pages
+          command: |
+            if [ "${CIRCLE_BRANCH}" = "master" ]; then
+              ./.circleci/deploy-ghpages.sh html
+            else
+              echo "Skipping deploy (not on master)"
+            fi
+
+workflows:
+  build-and-deploy:
+    jobs:
+      - test:
+          matrix:
+            parameters:
+              version:
+                - current
+      - deploy-docs:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master

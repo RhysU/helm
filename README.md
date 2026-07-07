@@ -1,9 +1,8 @@
 helm
 ====
 
-Project home: https://github.com/RhysU/helm
-
-API documentation: https://rhysu.github.io/helm/
+Overview
+--------
 
 ![Controller block diagram](helm.png)
 
@@ -18,9 +17,17 @@ within [helm.h](helm.h), features:
  * exposure of all independent physical time scales, and
  * the ability to accommodate varying sample rate.
 
+This project and its API documentation are hosted at
+[https://github.com/RhysU/helm](https://github.com/RhysU/helm) and
+[https://rhysu.github.io/helm/](https://rhysu.github.io/helm/), respectively.
+
 References
 ----------
 
--- Astrom, Karl J. and Richard M. Murray. [Feedback systems: an introduction for scientists and engineers](http://www.worldcat.org/isbn/9781400828739). Princeton University Press, April 2008. [Available online](http://www.cds.caltech.edu/~murray/amwiki/index.php/Main_Page).
+ * Astrom, Karl J. and Richard M. Murray. [Feedback systems: an introduction
+   for scientists and engineers](http://www.worldcat.org/isbn/9781400828739).
+   Princeton University Press, April 2008. [Available
+   online](http://www.cds.caltech.edu/~murray/amwiki/index.php/Main_Page).
 
--- Wescott, Tim. [Applied control theory for embedded systems](http://www.worldcat.org/ibsn/978-0750678391). Newnes, 2006.
+ * Wescott, Tim. [Applied control theory for embedded
+   systems](http://www.worldcat.org/ibsn/978-0750678391). Newnes, 2006.

@@ -16,7 +16,6 @@ clean:
 
 ###################################################################
 # Build Graphviz-based block diagram
-# FIXME Require version after 14 October 2011
 ###################################################################
 DOT ?= $(shell which dot)
 ifneq "$(DOT)" ""

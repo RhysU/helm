@@ -1,0 +1,17 @@
+<map id="step3.c" name="step3.c">
+<area shape="rect" id="Node000001" title="Sample controlling a 3rd order system across a unit step in the setpoint." alt="" coords="198,5,267,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,79,81,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="203,33,88,76,86,71,201,28"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="106,79,173,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="219,33,167,72,164,68,216,29"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="197,79,268,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="235,31,235,65,230,65,230,31"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="293,79,367,104"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="250,29,304,68,301,72,247,33"/>
+<area shape="rect" id="Node000006" href="$helm_8h.html" title="A header&#45;only PID controller based largely on Chapter 10 of Astrom and Murray." alt="" coords="391,79,458,104"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="264,28,381,71,379,76,263,33"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="339,152,414,177"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="419,106,394,142,390,139,415,103"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="439,152,507,177"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="435,103,460,139,455,142,430,106"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="helm.h" name="helm.h">
+<area shape="rect" id="Node000001" title="A header&#45;only PID controller based largely on Chapter 10 of Astrom and Murray." alt="" coords="51,5,117,31"/>
+<area shape="rect" id="Node000002" href="$helm_8c.html" title="C99 extern declarations for static inline functions within helm.h." alt="" coords="5,79,72,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="71,44,48,80,44,77,67,41"/>
+<area shape="rect" id="Node000003" href="$step3_8c.html" title="Sample controlling a 3rd order system across a unit step in the setpoint." alt="" coords="96,79,165,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="101,41,125,77,121,80,97,44"/>
+</map>

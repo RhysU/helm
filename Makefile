@@ -29,7 +29,6 @@ endif
 
 ###################################################################
 # Build Doxygen
-# FIXME Require version 1.8.3+ for full Markdown support
 ###################################################################
 DOXYGEN ?= $(shell which doxygen)
 ifneq "$(DOXYGEN)" ""

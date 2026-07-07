@@ -226,6 +226,7 @@ helm_approach(struct helm_state * const h)
     assert(h->Tf >  0);
     assert(h->Ti >  0);
     assert(h->Tt >  0);
+    h->y = NAN;
     h->f = NAN;
     return h;
 }
